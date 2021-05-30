@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex';
+import { mapGetters, mapActions } from "vuex";
 
 import Header from "./header/Index";
 import Sidebar from "./sidebar/Index";
@@ -21,10 +21,11 @@ export default {
     Sidebar,
     Chat: () => import("./chat/Index.vue"),
   },
-  created(){
+  created() {
     this.setProfile();
   },
-  methods: {...mapActions(["setProfile"])}
+  computed: { ...mapGetters(["profile"]) },
+  methods: { ...mapActions(["setProfile"]) },
 };
 </script>
 

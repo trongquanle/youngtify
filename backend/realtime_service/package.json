@@ -1,18 +1,22 @@
 {
-  "name": "realtime_service",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "nodemon index.js"
-  },
-  "author": "ltquan",
-  "license": "ISC",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "nodemon": "^2.0.7",
-    "socket.io": "^3.1.1"
-  }
+    "name": "realtime_service",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "serve": "nodemon index.js"
+    },
+    "author": "ltquan",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^4.17.1",
+        "nodemon": "^2.0.7",
+        "socket.io": "^3.1.1",
+        "dotenv": "10.0.0",
+        "mariadb": "2.5.3",
+        "uuid": "8.3.2",
+        "multer": "1.4.2"
+    }
 }

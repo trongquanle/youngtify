@@ -6,7 +6,7 @@
       rounded
     ></v-img>
     <div class="rm-image absolute">
-      <v-btn class="btn-rm-image" icon color="#fff">
+      <v-btn class="btn-rm-image" @click="$emit('onDeleteImage', index)" icon color="#fff">
         <v-icon size="16">mdi-close</v-icon>
       </v-btn>
     </div>
@@ -20,6 +20,7 @@ export default {
     image: {
       type: String,
     },
+    index: Number
   },
 };
 </script>

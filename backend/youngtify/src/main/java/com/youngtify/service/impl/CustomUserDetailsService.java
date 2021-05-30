@@ -18,6 +18,8 @@ import com.youngtify.repository.IAvatarRepository;
 import com.youngtify.repository.IESUserRepository;
 import com.youngtify.repository.ProfileRepository;
 import com.youngtify.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,6 +40,8 @@ import java.util.UUID;
 @Service
 public class CustomUserDetailsService extends BaseService implements UserDetailsService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
+
     @Autowired
     private UserRepository userRepository;
 
@@ -55,7 +59,7 @@ public class CustomUserDetailsService extends BaseService implements UserDetails
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) {
+    public CustomUser loadUserByUsername(String username) {
         UserEntity user = userRepository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(MessageConstant.USERNAME_NOT_EXISTS);
@@ -98,6 +102,38 @@ public class CustomUserDetailsService extends BaseService implements UserDetails
                 response.setData(new ServiceResult(ErrorConstant.REGISTER_SUCCES, MessageConstant.REGISTER_SUCCES));
             }
         } catch (Exception e) {
+            logger.warn(e.getMessage());
+            response.setData(new ServiceResult(ErrorConstant.INTERNAL_SERVER, MessageConstant.INTERNAL_SERVER));
+        }
+        return response;
+    }
+
+    public BaseResponse externalLogin(UserProfile user){
+        BaseResponse response = new BaseResponse();
+        try{
+            user.setPassword(bcryptEncoder.encode(user.getUsername()));
+//                if (user.getAvatarUrl() == null)
+//                    user.setAvatarUrl("/images/profile-7.jpg");
+            int temp = this.executeNoneQuery(
+                    StoreConstant.Proc_InserUserProfile,
+                    user.getId().toString(),
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getPhoneNumber(),
+                    user.getPassword(),
+                    1,
+                    user.getDateOfBirth(),
+                    user.getGender(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getAvatarUrl()
+            );
+            if (temp <= 0) throw new Exception();
+            saveToElasticsearch(user);
+            response.setSuccess(true);
+            response.setData(new ServiceResult(ErrorConstant.REGISTER_SUCCES, MessageConstant.REGISTER_SUCCES));
+        }catch (Exception e){
+            logger.warn(e.getMessage());
             response.setData(new ServiceResult(ErrorConstant.INTERNAL_SERVER, MessageConstant.INTERNAL_SERVER));
         }
         return response;
@@ -122,19 +158,16 @@ public class CustomUserDetailsService extends BaseService implements UserDetails
             );
             esUserRepository.save(user);
         } catch (Exception e) {
+            logger.warn(e.getMessage());
             System.out.println(e.getMessage());
         }
     }
 
     public UserProfile findByUsername(String username) {
-        UserEntity user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(MessageConstant.USERNAME_NOT_EXISTS);
-        }
         return this.firstOrDefault(
                 UserProfile.class,
                 StoreConstant.Proc_GetUserProfileByUsername,
-                user.getUsername()
+                username
         );
     }
 
@@ -219,6 +252,7 @@ public class CustomUserDetailsService extends BaseService implements UserDetails
 
             response.setData(new ServiceResult(ErrorConstant.ADD_PROFILE_SUCCES, MessageConstant.ADD_PROFILE_SUCCES));
         } catch (Exception e) {
+            logger.warn(e.getMessage());
             response.setData(new ServiceResult(ErrorConstant.INTERNAL_SERVER, MessageConstant.INTERNAL_SERVER));
         }
         return response;
@@ -236,6 +270,7 @@ public class CustomUserDetailsService extends BaseService implements UserDetails
             );
 
         } catch (Exception e) {
+            logger.warn(e.getMessage());
             response.setData(new ServiceResult(ErrorConstant.INTERNAL_SERVER, MessageConstant.INTERNAL_SERVER));
         }
         return response;

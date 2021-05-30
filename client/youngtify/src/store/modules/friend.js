@@ -12,8 +12,18 @@ const state = {
 }
 
 const mutations = {
-    'SET_FRIEND_PROFILE': (state, payload) => {
+    SET_FRIEND_PROFILE: (state, payload) => {
         state.friendProfile = payload;
+    },
+    RESET_FRIEND: (state) => {
+        state.friendProfile = {
+            firstName: '',
+            lastName: '',
+            gender: 0,
+            dateOfBirth: undefined,
+            phoneNumber: '',
+            avatarUrl: ''
+        }
     }
 }
 
@@ -31,6 +41,10 @@ const actions = {
         } catch (error) {
             console.log(error.response);
         }
+    },
+    resetFriend: ({commit}) => {
+        console.log(1);
+        commit("RESET_FRIEND");
     }
 }
 

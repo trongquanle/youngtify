@@ -99,7 +99,7 @@ export default {
       this.width = width;
       this.oldWith = width;
       this.$refs["search"].focus();
-    }, 1000);
+    }, 100);
   },
   methods: {
     stackT: function () {

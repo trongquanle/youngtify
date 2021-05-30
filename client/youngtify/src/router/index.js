@@ -65,6 +65,11 @@ const routes = [
         component: () => import("@/components/auth/register/Index.vue")
       }
     ]
+  },
+  {
+    path: "/videocall",
+    name: "videocall",
+    component: () => import("@/components/videocall/Index.vue")
   }
 ]
 

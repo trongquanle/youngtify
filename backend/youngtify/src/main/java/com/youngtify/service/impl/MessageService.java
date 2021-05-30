@@ -9,6 +9,8 @@ import com.youngtify.message.ServiceResult;
 import com.youngtify.model.Message;
 import com.youngtify.repository.IMessageRepository;
 import com.youngtify.service.IMessageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ import java.util.*;
 
 @Service
 public class MessageService extends BaseService implements IMessageService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageService.class);
 
     @Autowired
     private IMessageRepository messageRepository;
@@ -31,13 +35,16 @@ public class MessageService extends BaseService implements IMessageService {
             if (key != null)
                 date = formatter.parse(key);
             List<Message> messages = this.getAll(Message.class, StoreConstant.Proc_GetMessages, roomId.toString(), date);
+            Collections.reverse(messages);
             response.setSuccess(true);
             response.setData(messages);
         }
         catch (ParseException p){
+            logger.warn(p.getMessage());
             response.setData(new ServiceResult(ErrorConstant.DATE_INVALID, MessageConstant.DATE_INVALID));
         }
         catch (Exception e){
+            logger.warn(e.getMessage());
             response.setData(new ServiceResult(ErrorConstant.INTERNAL_SERVER, MessageConstant.INTERNAL_SERVER));
         }
         return response;
@@ -60,6 +67,7 @@ public class MessageService extends BaseService implements IMessageService {
             response.setData(images);
         }
         catch (Exception e){
+            logger.warn(e.getMessage());
             response.setData(new ServiceResult(ErrorConstant.INTERNAL_SERVER, MessageConstant.INTERNAL_SERVER));
         }
         return response;

@@ -1,5 +1,4 @@
 import { request } from '@/api';
-import { token } from '@/util/tokenUtil';
 
 const state = {
     email: '',
@@ -31,6 +30,22 @@ const mutations = {
     },
     'SET_ACCESS_TOKEN': (state, payload) => {
         state.accessToken = payload;
+    },
+    RESET_AUTH: (state) => {
+        state.email = '';
+        state.password = '';
+        state.profile = {
+            avatarUrl: '',
+            dateOfBirth: '',
+            email: '',
+            firstName: '',
+            gender: 0,
+            id: '',
+            lastName: '',
+            phoneNumber: '',
+            username: '',
+        }
+        state.accessToken = undefined;
     }
 }
 
@@ -42,7 +57,7 @@ const actions = {
         commit('SET_PASSWORD', payload);
     },
     login: ({ state }) => {
-        return new Promise(async(reslove, reject) => {
+        return new Promise(async (reslove, reject) => {
             try {
                 const { data } = await request('/api/auth/login', { method: 'POST', data: { username: state.email, password: state.password } });
                 reslove(data);
@@ -54,7 +69,7 @@ const actions = {
     setAccessToken: ({ commit }, payload) => {
         commit('SET_ACCESS_TOKEN', payload);
     },
-    setProfile: async({ commit, state }) => {
+    setProfile: async ({ commit, dispatch, state }) => {
         try {
             let { data } = await request("/api/users", {
                 method: "GET",
@@ -62,10 +77,15 @@ const actions = {
                     Authorization: `Bearer ${state.accessToken}`
                 }
             });
-            commit('SET_PROFILE', data)
+            commit('SET_PROFILE', data);
+            // commit("socket/INIT_SOCKET_EVENTS", state.profile.id);
+            dispatch('initSocketEvents', state.profile.id, { root: true });
         } catch (error) {
             console.log(error.response);
         }
+    },
+    resetAuth: ({commit}) => {
+        commit("RESET_AUTH");
     }
 }
 

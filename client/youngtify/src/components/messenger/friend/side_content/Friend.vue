@@ -6,21 +6,11 @@
     @click="joinRoom"
   >
     <div class="card-friend-item ml-4 flex items-center">
-      <v-badge
-        bordered
-        bottom
-        color="green accent-4"
-        dot
-        offset-x="10"
-        offset-y="10"
-      >
-        <v-avatar v-if="user.avatar" size="48">
-          <v-img src="https://cdn.vuetifyjs.com/images/lists/2.jpg"></v-img>
-        </v-avatar>
-        <v-avatar v-else color="#4B5563" size="48">
-          <span class="primary--text headline font-bold">{{ name }}</span>
-        </v-avatar>
-      </v-badge>
+      <Avatar
+        :id="user.id"
+        :title="user.fullname"
+        :avatarUrl="user.avatarUrl"
+      />
       <div class="ml-4">{{ user.fullname }}</div>
     </div>
     <v-btn v-show="active" class="mr-4" icon color="#3a8df5">
@@ -39,6 +29,9 @@ export default {
     user: {
       type: Object,
     },
+  },
+  components: {
+    Avatar: () => import("./../../chat/side_content/Avatar.vue")
   },
   data() {
     return {

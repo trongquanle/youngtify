@@ -17,4 +17,5 @@ public class StoreConstant {
     public static final String Proc_GetMessages = "Proc_GetMessages";
     public static final String Proc_GetConversationByUserId = "Proc_GetConversationByUserId";
     public static final String Proc_InsertAvatar = "Proc_InsertAvatar";
+    public static final String Proc_InsertConversation = "Proc_InsertConversation";
 }

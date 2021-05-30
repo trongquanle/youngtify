@@ -65,9 +65,12 @@ public class TokenUtil implements Serializable {
         claims.put("lastName", userProfile.getLastName());
         claims.put("email", userProfile.getEmail());
         claims.put("avatar", userProfile.getAvatarUrl());
-        claims.put("dateOfBirth", userProfile.getDateOfBirth().toString());
-        claims.put("gender", userProfile.getGender());
-        claims.put("phoneNumber", userProfile.getPhoneNumber());
+        if (userProfile.getDateOfBirth() != null)
+            claims.put("dateOfBirth", userProfile.getDateOfBirth().toString());
+        if (userProfile.getGender() != null)
+            claims.put("gender", userProfile.getGender());
+        if (userProfile.getPhoneNumber() != null)
+            claims.put("phoneNumber", userProfile.getPhoneNumber());
         return doGenerateToken(claims);
     }
 

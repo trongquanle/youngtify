@@ -4,7 +4,7 @@
       <router-link
         tag="div"
         :to="{ name: 'search' }"
-        class="-intro-y w-full h-10 dark-hover br-global flex items-center justify-center cursor-pointer"
+        class="-intro-y w-full h-10 dark-hover br-global flex items-center justify-center cursor-pointer transition duration-300 ease-in-out"
         exact-active-class="f-active"
         v-ripple
       >
@@ -32,7 +32,7 @@
       <router-link
         tag="div"
         :to="{ name: 'requests' }"
-        class="-intro-y w-full h-16 dark-hover br-global flex items-center cursor-pointer"
+        class="-intro-y w-full h-16 dark-hover br-global flex items-center cursor-pointer transition duration-300 ease-in-out"
         exact-active-class="f-active"
         v-ripple
       >
@@ -46,7 +46,7 @@
         <div>Danh sách kết bạn</div>
       </router-link>
       <div
-        class="-intro-y w-full h-16 dark-hover br-global flex items-center cursor-pointer"
+        class="-intro-y w-full h-16 dark-hover br-global flex items-center cursor-pointer transition duration-300 ease-in-out"
         v-ripple
       >
         <div class="pl-4">
@@ -59,11 +59,11 @@
         <div>Danh sách nhóm</div>
       </div>
       <div
-        class="-intro-y w-full h-10 dark-hover br-global flex items-center justify-between cursor-pointer"
+        class="-intro-y w-full h-10 dark-hover br-global flex items-center justify-between cursor-pointer transition duration-300 ease-in-out"
         v-ripple
         @click="isDown = !isDown"
       >
-        <div class="ml-4">Bạn bè (18)</div>
+        <div class="ml-4">Bạn bè <span v-if="friends.length > 0">({{ friends.length }})</span> </div>
         <div>
           <v-btn
             icon
@@ -81,7 +81,7 @@
           tag="div"
           :to="{ name: 'y', params: { id: user.id } }"
           exact-active-class="f-active"
-          class="w-full h-16 br-global dark-hover"
+          class="w-full h-16 br-global dark-hover transition duration-300 ease-in-out"
           v-ripple
         >
           <Friend :user="user" />

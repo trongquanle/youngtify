@@ -19,4 +19,6 @@ public class Conversation {
     private String messageTitle;
     private String avatarUrl;
     private Date modifiedDate;
+    private int messageType;
+    private UUID senderId;
 }

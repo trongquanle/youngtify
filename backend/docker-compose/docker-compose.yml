@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+    backend:
+        image: youngtify-backend:1.0.0
+        ports:
+            - "9090:9090"
+        networks: 
+            - backend
+    realtime:
+        image: youngtify-realtime:1.0.0
+        ports:
+            - "3000:3000"
+        networks: 
+            - backend
+networks:
+    backend:

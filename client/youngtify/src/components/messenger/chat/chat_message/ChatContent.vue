@@ -1,28 +1,33 @@
 <template>
   <div
     ref="chat"
-    class="chat-content overflow-y-scroll overflow-x-hidden scrollbar-hidden pt-3 flex-1"
+    class="chat-content overflow-y-scroll overflow-x-hidden scrollbar-hidden pt-3 flex-1 flex flex-col-reverse"
     v-on:scroll="handleScroll"
   >
-    <!-- <div v-if="loadMore" class="align-center justify-center d-flex">
-      <div class="dashed-loading"></div>
-    </div> -->
-    <MessageGroup v-for="m in messages" :key="m.id" :message="m" />
     <div class="clear-both"></div>
     <div v-if="loadding">
-      <div :style="`width: 100%;`" v-for="i in 10" v-bind:key="i">
+      <div :style="`width: 100%;`" v-for="(sk, i) in skelectons" v-bind:key="i">
         <v-sheet
-          :class="`${i % 2 == 0 ? 'float-right' : 'float-left'} mb-3`"
-          :style="`width: 350px; border-radius: 0.375rem;`"
+          :class="`${sk.left ? 'float-right pr-2' : 'float-left pl-2'} mb-3`"
+          :style="`width: ${sk.width}px; border-radius: 0.375rem;`"
         >
           <v-skeleton-loader
             class="mx-auto"
-            :type="i % 2 == 0 ? 'list-item' : 'list-item-avatar'"
+            :type="sk.left ? 'list-item' : 'list-item-avatar'"
             :dark="true"
           ></v-skeleton-loader>
         </v-sheet>
         <div class="clear-both"></div>
       </div>
+    </div>
+    <div class="clear-both mb-2"></div>
+    <MessageGroup v-for="m in messages" :key="m.id" :message="m.data" />
+    <div v-if="loadMore" class="align-center justify-center d-flex py-2">
+      <v-progress-circular
+        :size="28"
+        color="primary"
+        indeterminate
+      ></v-progress-circular>
     </div>
     <!-- <div class="clear-both"></div>
     <div class="intro-x chat-text-box flex items-end float-right mb-4">
@@ -199,7 +204,6 @@
 </template>
 
 <script>
-import { request } from "@/api";
 import MessageGroup from "./MessageGroup";
 import { mapGetters, mapActions } from "vuex";
 
@@ -222,6 +226,18 @@ export default {
       ],
       model: 1,
       scrollIndex: 0,
+      skelectons: [
+        { left: true, width: 300 },
+        { left: true, width: 350 },
+        { left: true, width: 320 },
+        { left: false, width: 400 },
+        { left: false, width: 350 },
+        { left: false, width: 370 },
+        { left: false, width: 326 },
+        { left: true, width: 330 },
+        { left: true, width: 450 },
+        { left: false, width: 380 },
+      ],
     };
   },
   computed: {
@@ -261,41 +277,29 @@ export default {
   methods: {
     ...mapActions(["loadMoreMessages", "changeMsgTitle"]),
     handleScroll(e) {
-      if (this.loadMore && this.$refs.chat.scrollTop == 0 && this.key) {
-        this.loadMoreMessages();
+      if (this.loadMore && this.key) {
+        const chatDiv = this.$refs.chat;
+        const maxScrollY = chatDiv.scrollHeight - chatDiv.clientHeight;
+        if (chatDiv.scrollTop == -maxScrollY){
+          this.loadMoreMessages();
+        }
       }
     },
   },
   mounted() {
     this.$refs.chat.scrollTop = this.$refs.chat.scrollHeight;
-    // this.scrollIndex = this.$refs.chat.scrollHeight;
-    // console.log(this.$refs.chat.scrollHeight);
   },
   watch: {
-    messages: function(newVal) {
+    messages: function (newVal) {
       if (this.scrollDown) {
         setTimeout(() => {
-          this.$refs.chat.scrollTop = this.$refs.chat.scrollHeight;
+          this.$refs.chat.scrollTop = 0;
         }, 0);
-      } else {
-        // setTimeout(() => {
-        // console.log(this.scrollIndex);
-        if (
-          !this.scrollIndex ||
-          this.scrollIndex > this.$refs.chat.scrollHeight
-        ) {
-          this.scrollIndex = 200;
-        }
-        // console.log(this.$refs.chat.scrollHeight);
-        this.$refs.chat.scrollTop =
-          this.$refs.chat.scrollHeight - this.scrollIndex - 50;
-        this.scrollIndex = this.$refs.chat.scrollHeight;
-        // }, 0);
       }
     },
     $route(to) {
       if (to && to.name == "youngtify") {
-        this.$refs.chat.scrollTop = this.$refs.chat.scrollHeight;
+        this.$refs.chat.scrollTop = 0;
       }
     },
   },
@@ -351,23 +355,5 @@ export default {
   to {
     transform: rotate(360deg);
   }
-}
-.theme--dark.v-skeleton-loader .v-skeleton-loader__actions,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__article,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__card-heading,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__card-text,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__date-picker,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-text,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-two-line,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar-two-line,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-three-line,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__list-item-avatar-three-line,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__table-heading,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__table-thead,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__table-tbody,
-.theme--dark.v-skeleton-loader .v-skeleton-loader__table-tfoot {
-  background: #313a55;
 }
 </style>

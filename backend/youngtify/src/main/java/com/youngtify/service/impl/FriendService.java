@@ -24,6 +24,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -34,11 +36,7 @@ import java.util.*;
 @Service
 public class FriendService extends BaseService implements IFriendService {
 
-    @Autowired
-    private UserRequestRepository userRequestRepository;
-
-    @Autowired
-    private FriendRepository friendRepository;
+    private static final Logger logger = LoggerFactory.getLogger(FriendService.class);
 
     @Autowired
     private ElasticsearchConfig elasticsearchConfig;
@@ -115,6 +113,7 @@ public class FriendService extends BaseService implements IFriendService {
             }
             response.setData(new ServiceResult(errorCode, messageCode));
         } catch (Exception e) {
+            logger.warn(e.getMessage());
             response.setSuccess(false);
             errorCode = ErrorConstant.INTERNAL_SERVER;
             messageCode = MessageConstant.INTERNAL_SERVER;
@@ -193,6 +192,7 @@ public class FriendService extends BaseService implements IFriendService {
                     break;
             }
         } catch (Exception e) {
+            logger.warn(e.getMessage());
             response.setData(new ServiceResult(ErrorConstant.INTERNAL_SERVER, MessageConstant.INTERNAL_SERVER));
         }
         return response;
@@ -233,6 +233,7 @@ public class FriendService extends BaseService implements IFriendService {
             }else response.setData(null);
             response.setSuccess(true);
         } catch (Exception e) {
+            logger.warn(e.getMessage());
             response.setData(new ServiceResult(ErrorConstant.INTERNAL_SERVER, MessageConstant.INTERNAL_SERVER));
         }
         return response;
@@ -278,6 +279,7 @@ public class FriendService extends BaseService implements IFriendService {
             }else response.setData(null);
             response.setSuccess(true);
         }catch (Exception e){
+            logger.warn(e.getMessage());
             response.setData(new ServiceResult(ErrorConstant.INTERNAL_SERVER, MessageConstant.INTERNAL_SERVER));
         }
         return response;

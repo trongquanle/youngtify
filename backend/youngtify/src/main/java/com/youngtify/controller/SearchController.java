@@ -57,13 +57,13 @@ public class SearchController {
 
     @GetMapping(value = "")
     public ResponseEntity<?> search(@RequestParam String key) {
-        try{
+        try {
             RestHighLevelClient client = elasticsearchConfig.client();
             QueryBuilder queryBuilder = QueryBuilders.matchQuery("fullname", key)
                     .fuzziness(Fuzziness.AUTO)
                     .maxExpansions(70);
-            String[] includeFields = new String[] {"id", "fullname", "phonenumber", "email", "avatar"};
-            String[] excludeFields = new String[] {"innerObject.*"};
+            String[] includeFields = new String[]{"id", "fullname", "phonenumber", "email", "avatar"};
+            String[] excludeFields = new String[]{"innerObject.*"};
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
                     .query(queryBuilder)
                     .fetchSource(includeFields, excludeFields);
@@ -74,29 +74,34 @@ public class SearchController {
             ObjectMapper mapper = new ObjectMapper();
             CustomUser customUser = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             List<UUID> ids = new ArrayList<>();
-            for (SearchHit hit:searchHits){
+            for (SearchHit hit : searchHits) {
                 String id = hit.getId();
-                if (!customUser.getUserId().toString().equals(id)){
+                if (!customUser.getUserId().toString().equals(id)) {
                     ids.add(UUID.fromString(id));
                     responseFields.add(mapper.convertValue(hit.getSourceAsMap(), ESUserRes.class));
                 }
             }
-            if (ids.size() > 0){
-//                Specification<UserRequestEntity> spec1 = (root, xq, cb) -> root.get("senderId").in(ids);
-//                Specification<UserRequestEntity> spec2 = (root, xq, cb) -> root.get("receiverId").in(ids);
-//                Specification<UserRequestEntity> spec3 = (root, xq, cb) -> cb.equal(root.get("senderId"), customUser.getUserId());
-//                Specification<UserRequestEntity> spec4 = (root, xq, cb) -> cb.equal(root.get("receiverId"), customUser.getUserId());
-//                Specification<UserRequestEntity> specification = spec1.and(spec4).or(spec2).and(spec3);
-                Specification specification1 = Specification.where(UserSpecification
-                        .in("senderId", ids).and(UserSpecification.equal("receiverId", customUser.getUserId()))
-                        .or(UserSpecification.in("receiverId", ids)).and(UserSpecification.equal("senderId", customUser.getUserId())));
-                List<UserRequestEntity> entities = userRequestRepository.findAll(specification1);
-                for(UserRequestEntity item:entities){
-                    for(ESUserRes esUserRes:responseFields){
-                        if(item.getSenderId().toString().equals(esUserRes.getId())){
-                            esUserRes.setStatus(item.getStatus());
+            if (ids.size() > 0) {
+                Specification<UserRequestEntity> spec1 = (root, xq, cb) -> root.get("senderId").in(ids);
+                Specification<UserRequestEntity> spec2 = (root, xq, cb) -> root.get("receiverId").in(ids);
+                Specification<UserRequestEntity> spec3 = (root, xq, cb) -> cb.equal(root.get("senderId"), customUser.getUserId());
+                Specification<UserRequestEntity> spec4 = (root, xq, cb) -> cb.equal(root.get("receiverId"), customUser.getUserId());
+                Specification<UserRequestEntity> specification1 = spec1.and(spec4);
+                Specification<UserRequestEntity> specification2 = spec2.and(spec3);
+                Specification<UserRequestEntity> specification = specification1.or(specification2);
+//                Specification specification1 = Specification.where(UserSpecification
+//                        .in("senderId", ids).and(UserSpecification.equal("receiverId", customUser.getUserId()))
+//                        .or(UserSpecification.in("receiverId", ids)).and(UserSpecification.equal("senderId", customUser.getUserId())));
+                List<UserRequestEntity> entities = userRequestRepository.findAll(specification);
+                for (UserRequestEntity item : entities) {
+                    for (ESUserRes esUserRes : responseFields) {
+                        if (item.getSenderId().toString().equals(esUserRes.getId())) {
+                            if (item.getStatus() == 1)
+                                esUserRes.setStatus(3);
+                            else
+                                esUserRes.setStatus(item.getStatus());
                             break;
-                        }else if (item.getReceiverId().toString().equals(esUserRes.getId())){
+                        } else if (item.getReceiverId().toString().equals(esUserRes.getId())) {
                             esUserRes.setStatus(item.getStatus());
                             break;
                         }
@@ -104,7 +109,7 @@ public class SearchController {
                 }
             }
             return ResponseEntity.ok(responseFields);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ServiceResult(ErrorConstant.INTERNAL_SERVER, MessageConstant.INTERNAL_SERVER));
@@ -112,7 +117,7 @@ public class SearchController {
     }
 
     @PostMapping(value = "")
-    public ResponseEntity<?> addToES(@RequestBody ESUser user){
+    public ResponseEntity<?> addToES(@RequestBody ESUser user) {
         return ResponseEntity.ok(userRepository.save(user));
     }
 }

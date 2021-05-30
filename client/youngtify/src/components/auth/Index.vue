@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-screen p-5 md:p-20 flex items-center justify-center">
+  <div class="member-ship w-full h-screen p-5 md:p-20 flex items-center justify-center">
     <div class="intro-y auth">
       <img
         class="intro-y mx-auto w-16"
@@ -28,5 +28,10 @@ export default {
 }
 html.dark body *, html.dark body ::before, html.dark body ::after{
   border-color: unset;
+}
+.member-ship{
+  background-image: url("./../../assets/img/background-login.jpg");
+  background-size: cover;
+  background-position:  center;
 }
 </style>
