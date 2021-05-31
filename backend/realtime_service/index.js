@@ -61,7 +61,7 @@ pool.getConnection().then(conn => {
         // Lấy danh sách phòng sau đó join
         socket.on('signCode', async (code) => {
             socket.code = code;
-            // this.keys.push(code);
+            console.log(code);
             let date = new Date();
             await changeStatusActivity(conn, code, 1, date, socket.id);
             let roomIds = await getRoomId(conn, socket.code);
