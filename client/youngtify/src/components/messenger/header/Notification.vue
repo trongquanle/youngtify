@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Notification",
@@ -125,11 +125,12 @@ export default {
   components: {
     NotificationItem: () => import("./NotificationItem")
   },
-  computed: { ...mapGetters(["notification"]) },
+  computed: { ...mapGetters(["notification", "socket"]) },
   created(){
     // console.log(this.notification);
   },
   methods: {
+    ...mapActions(["setNotification"]),
     onShowNotification() {
       this.showNotification = !this.showNotification;
       if (this.showNotification) {
@@ -142,6 +143,10 @@ export default {
       if (this.isClickOuside) {
         this.showNotification = false;
         this.isClickOuside = false;
+        if(this.notification.count > 0){
+          this.socket.emit("seenNotification");
+          this.setNotification();
+        }
       }
     },
   },

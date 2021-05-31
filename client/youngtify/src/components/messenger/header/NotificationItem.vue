@@ -4,13 +4,16 @@
     v-ripple
   >
     <div class="w-10 h-10 flex-none image-fit mr-1">
-      <img
-        alt="Topson Messenger Tailwind HTML Admin Template"
-        class="rounded-full"
-        src="@/assets/img/profile-1.jpg"
-      />
+      <v-avatar v-if="avatar" :size="40">
+        <img class="object-fit-cover" :src="avatar" />
+      </v-avatar>
+      <v-avatar v-else color="#4B5563" :size="40">
+        <span class="primary--text headline">{{ name }}</span>
+      </v-avatar>
     </div>
-    <div :class="`ml-2 overflow-hidden w-full ${notify.isSeen && 'text-gray-500'}`">
+    <div
+      :class="`ml-2 overflow-hidden w-full ${notify.isSeen && 'text-gray-500'}`"
+    >
       <div class="flex items-center">
         <a class="font-medium truncate mr-5">{{ notify.fullName }}</a>
         <div class="text-opacity-50 text-xs ml-auto whitespace-nowrap -mt-0.5">
@@ -26,7 +29,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import moment from 'moment';
+import moment from "moment";
 
 export default {
   name: "NotificationItem",
@@ -40,7 +43,7 @@ export default {
     timeText() {
       let text = "";
       const duration = moment.duration(
-        this.currentTime.diff(this.notify.modifiedDate)
+        this.currentTime.diff(this.notify.createdDate)
       );
       if (duration.asMinutes() < 60) {
         let minute = parseInt(duration.asMinutes());
@@ -58,6 +61,17 @@ export default {
       }
       return text;
     },
+    avatar(){
+      if (this.notify.avatarUrl) {
+        if (this.notify.avatarUrl.search("https://") !== -1) return this.notify.avatarUrl;
+        return `${process.env.VUE_APP_STORAGE_URL}${this.notify.avatarUrl}`;
+      }
+      return undefined;
+    },
+    name() {
+      let names = this.notify.fullName.split(" ");
+      return `${names[0][0]}${names[names.length - 1][0]}`;
+    }
   },
 };
 </script>

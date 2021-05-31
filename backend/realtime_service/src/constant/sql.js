@@ -25,7 +25,7 @@ const sqlGetNotificationNotSeen = "SELECT COUNT(*) AS Count FROM notifications W
 const sqlGetSocketIdByUserId = "SELECT SocketId FROM user_socket WHERE UserId = ?;";
 
 const sqlGetNotifications = `
-SELECT n.Id AS id, n.Content AS content, n.IsSeen AS isSeen, n.ModifiedDate as modifiedDate, TRIM(CONCAT(p.LastName, ' ', p.FirstName)) AS fullName, a.AvatarUrl AS avatarUrl
+SELECT n.Id AS id, n.Content AS content, n.IsSeen AS isSeen, n.CreatedDate as createdDate, TRIM(CONCAT(p.LastName, ' ', p.FirstName)) AS fullName, a.AvatarUrl AS avatarUrl
 FROM notifications n JOIN profiles p ON n.PostId = p.Id LEFT JOIN avatars a ON n.PostId = a.UserId
 WHERE (a.IsUsing OR a.IsUsing IS NULL) AND n.UserId = ?
 ORDER BY n.Id DESC;
@@ -40,6 +40,8 @@ const sqlGetVideoCallByRoomId = "SELECT * FROM user_videocall WHERE RoomId = ?;"
 const sqlGetVideoCallBySocketId = "SELECT * FROM user_videocall WHERE SenderSocketId = ? OR UserSocketId = ?;";
 
 const sqlDeleteVideoCallById = "DELETE FROM user_videocall WHERE Id = ?";
+
+const sqlUpdateNotification = "UPDATE notifications SET IsSeen = 1 WHERE UserId = ? AND IsSeen = 0;"
 
 module.exports = {
     sqlInsertMsg,
@@ -60,5 +62,6 @@ module.exports = {
     sqlUpdateVideocall,
     sqlGetVideoCallByRoomId,
     sqlGetVideoCallBySocketId,
-    sqlDeleteVideoCallById
+    sqlDeleteVideoCallById,
+    sqlUpdateNotification
 }

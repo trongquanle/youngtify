@@ -169,7 +169,7 @@ pool.getConnection().then(conn => {
                             avatarUrl: row["avatarUrl"],
                             content: row["content"],
                             isSeen: row["isSeen"],
-                            modifiedDate: row["modifiedDate"]
+                            createdDate: row["createdDate"]
                         }
                     });
                     notification.data = data
@@ -178,6 +178,14 @@ pool.getConnection().then(conn => {
                 console.log(error);
             }
             io.in(socket.id).emit('getNotification', JSON.stringify(notification));
+        });
+
+        socket.on('seenNotification', async () => {
+            try {
+                await conn.query(sql.sqlUpdateNotification, [socket.code]);
+            } catch (error) {
+                console.log(error);
+            }
         });
 
         socket.on('videoCall', async (payload) => {

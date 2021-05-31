@@ -288,6 +288,12 @@ const mutations = {
     SET_LOADDING: (state, payload) => {
         state.loadding = payload;
     },
+    SET_NOTIFICATION: (state) => {
+        state.notification.count = 0;
+        state.notification.data.map(notify => {
+            notify.isSeen = 1;
+        });
+    },
     RESET_SOCKET: (state) => {
         state.currentRoom = null;
         state.rooms = [];
@@ -454,6 +460,9 @@ const actions = {
     },
     changeMsgTitle: ({ commit }, payload) => {
         commit('CHANGE_MSG_TITLE', payload);
+    },
+    setNotification: ({commit}) => {
+        commit("SET_NOTIFICATION");
     },
     resetSocket: ({ commit }) => {
         commit("RESET_SOCKET");

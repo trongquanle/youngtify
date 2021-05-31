@@ -1,9 +1,6 @@
 .idea/
 .vscode/
 node_modules/
-images/
-avatars/
-videos/
 build/
 tmp/
 temp/
