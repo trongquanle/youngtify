@@ -70,6 +70,7 @@ const mutations = {
         state.code = payload;
         state.sk = io(process.env.VUE_APP_REALTIME_URL);
         state.sk.on("signCodeClient", () => {
+            console.log(state.code);
             state.sk.emit("signCode", state.code);
             state.sk.emit("getNotification");
         });
